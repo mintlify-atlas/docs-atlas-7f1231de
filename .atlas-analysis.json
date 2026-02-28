@@ -1,0 +1,65 @@
+{
+  "projectType": "api-service",
+  "projectName": "Beaver Builder REST API",
+  "projectDescription": "WordPress REST API plugin that exposes rendered HTML, CSS, and JavaScript for Beaver Builder pages and posts.",
+  "theme": "palm",
+  "primaryColor": "#0066CC",
+  "lightColor": "#4D94FF",
+  "darkColor": "#004C99",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "installation"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/authentication",
+              "guides/usage-examples"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api/overview",
+              "api/content",
+              "api/css",
+              "api/js"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "api/response-format",
+              "api/error-handling"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "REST API endpoints for Beaver Builder content",
+    "Retrieve rendered HTML for pages and posts",
+    "Access compiled CSS for Beaver Builder layouts",
+    "Fetch JavaScript for interactive Beaver Builder elements",
+    "Support for remote app integration"
+  ],
+  "publicApiSurface": [
+    "GET /wp-json/fl-builder/v1/{page_id}",
+    "GET /wp-json/fl-builder/v1/css/{page_id}",
+    "GET /wp-json/fl-builder/v1/js/{page_id}"
+  ]
+}
