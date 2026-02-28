@@ -1,0 +1,97 @@
+---
+title: Installation
+description: Install the Beaver Builder REST API plugin on your WordPress site
+---
+
+## Prerequisites
+
+Before installing the Beaver Builder REST API plugin, ensure you have:
+
+<Steps>
+  <Step title="WordPress 4.4 or higher">
+    The plugin requires WordPress 4.4+ for REST API support (class `WP_REST_Request`)
+  </Step>
+  <Step title="Beaver Builder installed">
+    The Beaver Builder plugin must be installed and activated on your site
+  </Step>
+  <Step title="PHP 5.6 or higher">
+    Ensure your server meets the minimum PHP version requirement
+  </Step>
+</Steps>
+
+## Installation Methods
+
+### Manual Installation
+
+<Steps>
+  <Step title="Download the plugin">
+    Download the `bb-rest` plugin files to your local machine
+  </Step>
+  <Step title="Upload to WordPress">
+    Upload the plugin folder to `/wp-content/plugins/` on your WordPress installation
+  </Step>
+  <Step title="Activate the plugin">
+    Navigate to **Plugins** in your WordPress admin dashboard and activate **bb-rest**
+  </Step>
+</Steps>
+
+### FTP Installation
+
+<Steps>
+  <Step title="Connect via FTP">
+    Connect to your server using an FTP client (FileZilla, Cyberduck, etc.)
+  </Step>
+  <Step title="Navigate to plugins directory">
+    Go to `/wp-content/plugins/` directory
+  </Step>
+  <Step title="Upload plugin files">
+    Upload the `bb-rest` folder to the plugins directory
+  </Step>
+  <Step title="Activate in WordPress">
+    Log in to WordPress admin and activate the plugin from the Plugins page
+  </Step>
+</Steps>
+
+## Verify Installation
+
+After installation, verify the plugin is working correctly:
+
+<Steps>
+  <Step title="Check REST API endpoints">
+    Visit `https://your-site.com/wp-json/fl-builder/v1/` in your browser
+  </Step>
+  <Step title="Confirm response">
+    You should see a REST API response (not a 404 error)
+  </Step>
+</Steps>
+
+<Note>
+  If the REST API endpoints are not accessible, ensure WordPress permalinks are enabled. Go to **Settings → Permalinks** and select any option other than "Plain".
+</Note>
+
+## Plugin Structure
+
+The plugin automatically registers three REST API endpoints when activated:
+
+- **Content endpoint**: `/fl-builder/v1/{id}` - Returns HTML, CSS, and JS for a post
+- **CSS endpoint**: `/fl-builder/v1/css/{id}` - Returns only compiled CSS
+- **JS endpoint**: `/fl-builder/v1/js/{id}` - Returns only JavaScript
+
+## Configuration
+
+The plugin works out of the box with no configuration required. Once activated, all endpoints are immediately available through the WordPress REST API.
+
+<Warning>
+  Ensure your WordPress site has proper security measures in place, as the REST API is publicly accessible by default.
+</Warning>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Usage Examples" icon="rocket" href="/guides/usage-examples">
+    Make your first API request
+  </Card>
+  <Card title="API Reference" icon="book" href="/api/overview">
+    Explore all available endpoints
+  </Card>
+</CardGroup>

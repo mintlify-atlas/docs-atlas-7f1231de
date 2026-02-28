@@ -1,0 +1,354 @@
+---
+title: "Error Handling"
+description: "Understanding and handling errors in the Beaver Builder REST API"
+icon: "triangle-exclamation"
+---
+
+The Beaver Builder REST API uses WordPress REST API error responses. Understanding these error formats and common scenarios will help you build robust integrations.
+
+## Error Response Format
+
+All API errors follow the WordPress REST API error format and return a JSON object with error details.
+
+### Error Object Structure
+
+<ResponseField name="code" type="string" required>
+  A machine-readable error code identifying the type of error. Examples: `rest_post_invalid_id`, `rest_forbidden`, `rest_no_route`.
+</ResponseField>
+
+<ResponseField name="message" type="string" required>
+  A human-readable error message describing what went wrong.
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Additional context about the error.
+  
+  <Expandable title="properties">
+    <ResponseField name="status" type="integer">
+      HTTP status code for the error (e.g., 404, 403, 500).
+    </ResponseField>
+    
+    <ResponseField name="params" type="object">
+      Information about invalid parameters, if applicable.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Example Error Response
+
+```json
+{
+  "code": "rest_post_invalid_id",
+  "message": "Invalid post ID.",
+  "data": {
+    "status": 404
+  }
+}
+```
+
+## HTTP Status Codes
+
+The API uses standard HTTP status codes to indicate the success or failure of requests.
+
+### Success Codes
+
+| Status Code | Description |
+|------------|-------------|
+| `200 OK` | Request successful, data returned |
+
+### Client Error Codes
+
+| Status Code | Description | Common Causes |
+|------------|-------------|---------------|
+| `400 Bad Request` | Invalid request format | Malformed parameters, missing required fields |
+| `401 Unauthorized` | Authentication required | Missing or invalid authentication credentials |
+| `403 Forbidden` | Insufficient permissions | User lacks permission to access the resource |
+| `404 Not Found` | Resource not found | Invalid post ID, post doesn't exist |
+
+### Server Error Codes
+
+| Status Code | Description | Common Causes |
+|------------|-------------|---------------|
+| `500 Internal Server Error` | Server encountered an error | PHP errors, database issues, plugin conflicts |
+| `503 Service Unavailable` | Server temporarily unavailable | Maintenance mode, server overload |
+
+## Common Error Scenarios
+
+### Invalid Post ID
+
+Occurs when the requested post ID doesn't exist or is invalid.
+
+**Error Response:**
+```json
+{
+  "code": "rest_post_invalid_id",
+  "message": "Invalid post ID.",
+  "data": {
+    "status": 404
+  }
+}
+```
+
+**How to Handle:**
+- Verify the post ID exists before making the request
+- Check that the ID is a valid integer
+- Ensure the post hasn't been deleted
+
+<CodeGroup>
+```javascript JavaScript
+const response = await fetch(`/wp-json/fl-builder/v1/${postId}`);
+
+if (!response.ok) {
+  const error = await response.json();
+  if (error.code === 'rest_post_invalid_id') {
+    console.error('Post not found:', postId);
+    // Handle missing post
+  }
+}
+```
+
+```php PHP
+$response = wp_remote_get(
+  rest_url('fl-builder/v1/' . $post_id)
+);
+
+if (is_wp_error($response)) {
+  error_log('API request failed: ' . $response->get_error_message());
+  return false;
+}
+
+$body = json_decode(wp_remote_retrieve_body($response));
+if (isset($body->code) && $body->code === 'rest_post_invalid_id') {
+  // Handle invalid post ID
+  return null;
+}
+```
+
+```python Python
+import requests
+
+response = requests.get(f'https://example.com/wp-json/fl-builder/v1/{post_id}')
+
+if response.status_code == 404:
+    error = response.json()
+    if error.get('code') == 'rest_post_invalid_id':
+        print(f'Post not found: {post_id}')
+        # Handle missing post
+```
+</CodeGroup>
+
+### No Route Found
+
+Occurs when the API endpoint doesn't exist or the URL is incorrect.
+
+**Error Response:**
+```json
+{
+  "code": "rest_no_route",
+  "message": "No route was found matching the URL and request method.",
+  "data": {
+    "status": 404
+  }
+}
+```
+
+**How to Handle:**
+- Verify the endpoint URL is correct
+- Check that the REST API is enabled
+- Ensure the Beaver Builder REST plugin is active
+
+<Warning>
+If you receive this error, verify that the `bb-rest` plugin is properly installed and activated. The endpoints won't be registered if the plugin isn't active.
+</Warning>
+
+### Forbidden Access
+
+Occurs when the user doesn't have permission to access the resource.
+
+**Error Response:**
+```json
+{
+  "code": "rest_forbidden",
+  "message": "Sorry, you are not allowed to view this post.",
+  "data": {
+    "status": 403
+  }
+}
+```
+
+**How to Handle:**
+- Ensure the user is authenticated if required
+- Verify the user has permission to view the post
+- Check post visibility settings
+
+### Missing Dependencies
+
+Occurs when required WordPress or Beaver Builder classes aren't available.
+
+**Error Response:**
+```json
+{
+  "code": "rest_server_error",
+  "message": "Call to undefined function FLBuilder::render_content_by_id()",
+  "data": {
+    "status": 500
+  }
+}
+```
+
+**How to Handle:**
+- Verify Beaver Builder plugin is installed and activated
+- Check that you're calling the API on a page with Beaver Builder content
+- Ensure plugin dependencies are loaded
+
+<Danger>
+This error indicates a critical configuration issue. The Beaver Builder plugin must be active and properly configured for the REST API to function.
+</Danger>
+
+## Best Practices for Error Handling
+
+<Steps>
+  <Step title="Always Check Response Status">
+    Check the HTTP status code before processing the response body.
+    
+    ```javascript
+    if (!response.ok) {
+      // Handle error
+      const error = await response.json();
+      console.error('API Error:', error.message);
+      return;
+    }
+    ```
+  </Step>
+  
+  <Step title="Implement Retry Logic">
+    For temporary failures (5xx errors), implement exponential backoff retry logic.
+    
+    ```javascript
+    async function fetchWithRetry(url, maxRetries = 3) {
+      for (let i = 0; i < maxRetries; i++) {
+        const response = await fetch(url);
+        if (response.ok) return response;
+        
+        if (response.status >= 500 && i < maxRetries - 1) {
+          await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
+          continue;
+        }
+        
+        throw new Error(`Request failed: ${response.status}`);
+      }
+    }
+    ```
+  </Step>
+  
+  <Step title="Log Errors Appropriately">
+    Log error details for debugging while showing user-friendly messages to end users.
+    
+    ```javascript
+    try {
+      const data = await fetchLayoutData(postId);
+    } catch (error) {
+      console.error('Failed to fetch layout:', error);
+      showUserMessage('Unable to load layout. Please try again.');
+    }
+    ```
+  </Step>
+  
+  <Step title="Validate Input Before Requests">
+    Validate post IDs and other parameters before making API calls.
+    
+    ```javascript
+    function isValidPostId(id) {
+      return Number.isInteger(id) && id > 0;
+    }
+    
+    if (!isValidPostId(postId)) {
+      throw new Error('Invalid post ID');
+    }
+    ```
+  </Step>
+</Steps>
+
+## Error Response Examples
+
+<AccordionGroup>
+  <Accordion title="404 - Post Not Found">
+    ```json
+    {
+      "code": "rest_post_invalid_id",
+      "message": "Invalid post ID.",
+      "data": {
+        "status": 404
+      }
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="403 - Forbidden">
+    ```json
+    {
+      "code": "rest_forbidden",
+      "message": "Sorry, you are not allowed to view this post.",
+      "data": {
+        "status": 403
+      }
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="500 - Server Error">
+    ```json
+    {
+      "code": "rest_server_error",
+      "message": "There has been a critical error on this website.",
+      "data": {
+        "status": 500
+      }
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="404 - No Route">
+    ```json
+    {
+      "code": "rest_no_route",
+      "message": "No route was found matching the URL and request method.",
+      "data": {
+        "status": 404
+      }
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Debugging Tips
+
+<Tip>
+**Enable WordPress Debug Mode** to see detailed error messages during development. Add these lines to your `wp-config.php`:
+
+```php
+define('WP_DEBUG', true);
+define('WP_DEBUG_LOG', true);
+define('WP_DEBUG_DISPLAY', false);
+```
+
+Errors will be logged to `wp-content/debug.log`.
+</Tip>
+
+<CardGroup cols={2}>
+  <Card title="Check Error Logs" icon="file-lines">
+    Review WordPress error logs for detailed stack traces and error context.
+  </Card>
+  
+  <Card title="Test in Browser" icon="browser">
+    Use browser developer tools to inspect API responses and network errors.
+  </Card>
+  
+  <Card title="Verify Plugin Status" icon="plug">
+    Ensure both Beaver Builder and bb-rest plugins are active and up to date.
+  </Card>
+  
+  <Card title="Check Permissions" icon="lock">
+    Verify that the post is published and the user has appropriate permissions.
+  </Card>
+</CardGroup>

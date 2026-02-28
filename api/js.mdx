@@ -1,0 +1,53 @@
+---
+title: 'Get Page JavaScript'
+description: 'Retrieve only the JavaScript code for a Beaver Builder page'
+api: 'GET /wp-json/fl-builder/v1/js/{page_id}'
+---
+
+Retrieve only the JavaScript code for a specific Beaver Builder page.
+
+## Endpoint
+
+```
+GET /wp-json/fl-builder/v1/js/{page_id}
+```
+
+## Path Parameters
+
+<ParamField path="page_id" type="integer" required>
+  The WordPress post/page ID to retrieve JavaScript for. Must be a valid post ID with Beaver Builder content.
+</ParamField>
+
+## Response
+
+Returns a plain text string containing the JavaScript code for the page. The JavaScript is optimized with spaces stripped.
+
+## Example Request
+
+```bash cURL
+curl -X GET "https://yoursite.com/wp-json/fl-builder/v1/js/123" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+## Example Response
+
+```javascript
+jQuery(document).ready(function($){$('.fl-node-abc123').on('click',function(){console.log('clicked');});});
+```
+
+## Use Cases
+
+- Load JavaScript separately for performance optimization
+- Implement custom script loading strategies
+- Generate JavaScript files for static site generation
+- Debug or inspect page-specific scripts
+- Integrate with build tools or bundlers
+- Support for headless WordPress implementations
+
+## Notes
+
+- The JavaScript is dynamically generated based on the page's Beaver Builder configuration
+- Whitespace is stripped to reduce response size
+- Includes module-specific JavaScript and interaction handlers
+- Does not include core Beaver Builder JavaScript libraries (only page-specific code)
+- May include jQuery-dependent code, ensure jQuery is loaded in your implementation

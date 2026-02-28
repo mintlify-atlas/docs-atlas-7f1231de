@@ -1,0 +1,144 @@
+---
+title: "Response Format"
+description: "Understanding the response structure for each Beaver Builder REST API endpoint"
+icon: "brackets-curly"
+---
+
+The Beaver Builder REST API returns responses in different formats depending on the endpoint you're calling. All responses follow the WordPress REST API standards and return JSON data.
+
+## Content Endpoint Response
+
+The content endpoint (`/fl-builder/v1/{id}`) returns a comprehensive object containing the rendered HTML, CSS, and JavaScript for a Beaver Builder layout.
+
+### Response Structure
+
+<ResponseField name="id" type="integer" required>
+  The post ID of the requested Beaver Builder layout.
+</ResponseField>
+
+<ResponseField name="html" type="string" required>
+  The fully rendered HTML content of the Beaver Builder layout. This includes all modules, rows, and columns with their configured settings applied.
+</ResponseField>
+
+<ResponseField name="css" type="string" required>
+  The compiled CSS styles for the layout. This includes all module styles, responsive settings, and custom CSS. Whitespace is preserved in this response.
+</ResponseField>
+
+<ResponseField name="js" type="string" required>
+  The JavaScript code required for the layout's interactive elements. This includes module scripts and any custom JavaScript. Whitespace is preserved in this response.
+</ResponseField>
+
+### Example Response
+
+```json
+{
+  "id": 123,
+  "html": "<div class='fl-builder-content'>...</div>",
+  "css": ".fl-node-abc123 { background-color: #fff; }",
+  "js": "jQuery(document).ready(function($) { ... });"
+}
+```
+
+<Note>
+The `html`, `css`, and `js` fields work together to provide a complete, ready-to-render Beaver Builder layout. You typically need all three to properly display the content.
+</Note>
+
+## CSS Endpoint Response
+
+The CSS endpoint (`/fl-builder/v1/css/{id}`) returns only the compiled CSS for a specific layout.
+
+### Response Structure
+
+Returns a plain string containing the minified CSS with all spaces, newlines, and tabs removed.
+
+<ResponseField name="response" type="string" required>
+  Minified CSS string with all whitespace characters (spaces, newlines, tabs) stripped out for optimal delivery size.
+</ResponseField>
+
+### Example Response
+
+```css
+.fl-node-abc123{background-color:#fff;padding:20px;}.fl-node-def456{color:#333;font-size:16px;}
+```
+
+<Tip>
+The CSS endpoint is useful when you only need to update styles without re-fetching the entire layout. This can improve performance for dynamic style updates.
+</Tip>
+
+## JS Endpoint Response
+
+The JavaScript endpoint (`/fl-builder/v1/js/{id}`) returns only the JavaScript code for a specific layout.
+
+### Response Structure
+
+Returns a plain string containing the minified JavaScript with all spaces, newlines, and tabs removed.
+
+<ResponseField name="response" type="string" required>
+  Minified JavaScript string with all whitespace characters (spaces, newlines, tabs) stripped out for optimal delivery size.
+</ResponseField>
+
+### Example Response
+
+```javascript
+jQuery(document).ready(function($){$('.fl-node-abc123').fadeIn();});
+```
+
+<Tip>
+Use the JS endpoint when you need to dynamically load or update JavaScript functionality without re-fetching the entire layout content.
+</Tip>
+
+## Response Headers
+
+All endpoints return standard WordPress REST API headers:
+
+- `Content-Type: application/json` (for content endpoint)
+- `Content-Type: text/plain` (for CSS and JS endpoints)
+- `X-WP-Total`: Total number of items (when applicable)
+- `X-WP-TotalPages`: Total number of pages (when applicable)
+
+<Warning>
+The CSS and JS endpoints return plain text strings, not JSON objects. Make sure your client handles these responses appropriately.
+</Warning>
+
+## Data Processing
+
+### Content Endpoint
+
+The content endpoint processes data through the following pipeline:
+
+1. Retrieves the post by ID using `get_post()`
+2. Renders the layout content using `FLBuilder::render_content_by_id()`
+3. Generates the CSS using `FLBuilder::render_css()`
+4. Generates the JavaScript using `FLBuilder::render_js()`
+5. Returns all components as a structured object
+
+### CSS and JS Endpoints
+
+Both endpoints apply whitespace stripping for optimization:
+
+- Removes all newline characters (`\n`)
+- Removes all carriage returns (`\r`)
+- Removes all tabs (`\t`)
+- Removes all spaces
+
+This results in smaller payload sizes for faster delivery.
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Use the Right Endpoint" icon="bullseye">
+    Use the content endpoint for initial loads, and the CSS/JS endpoints for dynamic updates.
+  </Card>
+  
+  <Card title="Cache Responses" icon="database">
+    Cache responses when possible to reduce server load and improve performance.
+  </Card>
+  
+  <Card title="Handle All Components" icon="puzzle-piece">
+    When using the content endpoint, ensure you inject the HTML, CSS, and JS in the correct order.
+  </Card>
+  
+  <Card title="Verify Post ID" icon="check">
+    Always verify the post ID exists and is a valid Beaver Builder layout before making requests.
+  </Card>
+</CardGroup>

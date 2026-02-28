@@ -1,0 +1,54 @@
+---
+title: 'Get Page CSS'
+description: 'Retrieve only the CSS styles for a Beaver Builder page'
+api: 'GET /wp-json/fl-builder/v1/css/{page_id}'
+---
+
+Retrieve only the compiled CSS styles for a specific Beaver Builder page.
+
+## Endpoint
+
+```
+GET /wp-json/fl-builder/v1/css/{page_id}
+```
+
+## Path Parameters
+
+<ParamField path="page_id" type="integer" required>
+  The WordPress post/page ID to retrieve CSS for. Must be a valid post ID with Beaver Builder content.
+</ParamField>
+
+## Response
+
+Returns a plain text string containing the compiled CSS styles for the page. The CSS is optimized with spaces stripped.
+
+## Example Request
+
+```bash cURL
+curl -X GET "https://yoursite.com/wp-json/fl-builder/v1/css/123" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+## Example Response
+
+```css
+.fl-node-abc123{background-color:#ffffff;padding:20px;}
+.fl-node-def456{display:flex;flex-direction:column;}
+.fl-module-content{margin-bottom:30px;}
+@media (max-width:768px){.fl-node-abc123{padding:10px;}}
+```
+
+## Use Cases
+
+- Load CSS separately for performance optimization
+- Implement custom caching strategies for styles
+- Generate CSS files for static site generation
+- Debug or inspect page-specific styles
+- Integrate with build tools or asset pipelines
+
+## Notes
+
+- The CSS is dynamically generated based on the page's Beaver Builder configuration
+- Whitespace is stripped to reduce response size
+- Includes all module styles, row styles, and responsive breakpoints
+- Does not include global Beaver Builder CSS (only page-specific styles)

@@ -1,0 +1,66 @@
+---
+title: Introduction
+description: Welcome to the Beaver Builder REST API documentation
+---
+
+## Overview
+
+The Beaver Builder REST API plugin exposes Beaver Builder content through WordPress REST API endpoints, enabling seamless integration with remote applications, headless WordPress implementations, and third-party services.
+
+This plugin provides programmatic access to retrieve rendered HTML, compiled CSS, and JavaScript for Beaver Builder layouts, making it easy to consume Beaver Builder content in any application.
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="REST API Endpoints" icon="plug">
+    Access Beaver Builder content through standardized WordPress REST API endpoints
+  </Card>
+  <Card title="Rendered HTML" icon="code">
+    Retrieve fully rendered HTML for pages and posts built with Beaver Builder
+  </Card>
+  <Card title="Compiled CSS" icon="palette">
+    Fetch the compiled CSS styles for your Beaver Builder layouts
+  </Card>
+  <Card title="JavaScript Assets" icon="js">
+    Access JavaScript required for interactive Beaver Builder elements
+  </Card>
+</CardGroup>
+
+## Use Cases
+
+- **Headless WordPress**: Integrate Beaver Builder content into React, Vue, or Next.js applications
+- **Mobile Apps**: Fetch page content and styling for native mobile applications
+- **Remote Integration**: Access Beaver Builder layouts from external systems and services
+- **Content Distribution**: Deliver Beaver Builder content across multiple platforms
+
+## API Namespace
+
+All endpoints are registered under the `fl-builder/v1` namespace:
+
+```
+https://your-site.com/wp-json/fl-builder/v1/
+```
+
+## Get Started
+
+<CardGroup cols={3}>
+  <Card title="Installation" icon="download" href="/installation">
+    Install the plugin on your WordPress site
+  </Card>
+  <Card title="Usage Examples" icon="rocket" href="/guides/usage-examples">
+    Make your first API request
+  </Card>
+  <Card title="API Reference" icon="book" href="/api/overview">
+    Explore all available endpoints
+  </Card>
+</CardGroup>
+
+## Requirements
+
+<Note>
+  This plugin requires Beaver Builder to be installed and activated on your WordPress site.
+</Note>
+
+- WordPress 4.4 or higher (WordPress REST API support)
+- Beaver Builder plugin (any version)
+- PHP 5.6 or higher

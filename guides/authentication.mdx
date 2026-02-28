@@ -1,0 +1,216 @@
+---
+title: 'Authentication'
+description: 'Learn how to authenticate with the Beaver Builder REST API'
+icon: 'key'
+---
+
+## Overview
+
+The Beaver Builder REST API uses the WordPress REST API authentication system. Since the API is built on top of WordPress's native REST API infrastructure, it inherits all of WordPress's authentication methods and security features.
+
+## Authentication Methods
+
+WordPress REST API supports multiple authentication methods. Choose the one that best fits your use case:
+
+### Cookie Authentication
+
+Cookie authentication is primarily used for WordPress core and plugin/theme developers who are making AJAX requests from within WordPress.
+
+<Note>
+  Cookie authentication is ideal for internal WordPress applications but should not be used for external API access.
+</Note>
+
+**When to use:**
+- Making requests from WordPress admin or frontend
+- Internal plugin/theme development
+- Same-origin requests
+
+**Usage:**
+Cookie authentication works automatically when making requests from within WordPress. You need to include the nonce in your requests:
+
+```javascript
+jQuery.ajax({
+    url: '/wp-json/fl-builder/v1/123',
+    method: 'GET',
+    beforeSend: function(xhr) {
+        xhr.setRequestHeader('X-WP-Nonce', wpApiSettings.nonce);
+    },
+    success: function(data) {
+        console.log(data);
+    }
+});
+```
+
+### Application Passwords
+
+Application Passwords is the recommended method for external applications and API clients. This feature is available in WordPress 5.6 and later.
+
+<Tip>
+  Application Passwords provide secure, revocable access tokens without exposing your actual WordPress password.
+</Tip>
+
+**When to use:**
+- External applications
+- Mobile apps
+- Third-party integrations
+- Automated scripts and tools
+
+**Setting up Application Passwords:**
+
+1. Go to **Users** > **Profile** in WordPress admin
+2. Scroll to the **Application Passwords** section
+3. Enter a name for your application (e.g., "Beaver Builder API Client")
+4. Click **Add New Application Password**
+5. Copy the generated password (you won't be able to see it again)
+
+**Usage with cURL:**
+
+```bash
+curl -u username:application-password \
+  https://example.com/wp-json/fl-builder/v1/123
+```
+
+**Usage with JavaScript:**
+
+```javascript
+const username = 'your-username';
+const appPassword = 'xxxx xxxx xxxx xxxx xxxx xxxx';
+const credentials = btoa(`${username}:${appPassword}`);
+
+fetch('https://example.com/wp-json/fl-builder/v1/123', {
+    headers: {
+        'Authorization': `Basic ${credentials}`
+    }
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+### OAuth Authentication
+
+OAuth 1.0a authentication can be used via third-party plugins like WP OAuth Server or OAuth 1.0a Server.
+
+<Note>
+  OAuth requires additional plugin installation and configuration.
+</Note>
+
+**When to use:**
+- Complex third-party integrations
+- When you need delegated authentication
+- Multi-user applications
+
+**Setup:**
+1. Install an OAuth plugin (e.g., WP OAuth Server)
+2. Configure OAuth credentials
+3. Implement OAuth flow in your application
+
+### JWT Authentication
+
+JSON Web Token (JWT) authentication can be implemented via plugins like JWT Authentication for WP REST API.
+
+**When to use:**
+- Modern API clients
+- Mobile applications
+- Single Page Applications (SPAs)
+- Microservices architecture
+
+**Setup:**
+1. Install a JWT authentication plugin
+2. Configure JWT secret in wp-config.php
+3. Obtain token via login endpoint
+4. Include token in subsequent requests
+
+## Public vs Authenticated Access
+
+The Beaver Builder REST API endpoints use WordPress's default permission checks:
+
+<CodeGroup>
+
+```php Endpoint Registration
+register_rest_route( 'fl-builder/v1/', '(?P<id>\d+)', array(
+    'methods' => WP_REST_Server::READABLE,
+    'callback' => array( __CLASS__, 'callback' )
+) );
+```
+
+</CodeGroup>
+
+<Warning>
+  Since no explicit `permission_callback` is defined in the source code, access control depends on WordPress's default behavior and any additional security plugins or settings you have configured.
+</Warning>
+
+### Public Access
+
+By default, GET requests to public posts may be accessible without authentication, depending on your WordPress configuration.
+
+### Authenticated Access
+
+For accessing private or draft content, authentication is required. WordPress will automatically verify permissions based on:
+
+- Post visibility (public, private, draft)
+- User capabilities
+- Custom post type permissions
+- Additional security plugins
+
+## Security Best Practices
+
+<Steps>
+  <Step title="Use HTTPS">
+    Always use HTTPS in production to encrypt authentication credentials during transmission.
+  </Step>
+  
+  <Step title="Restrict User Permissions">
+    Create dedicated users with minimal required permissions for API access.
+  </Step>
+  
+  <Step title="Rotate Application Passwords">
+    Regularly rotate application passwords and revoke unused ones.
+  </Step>
+  
+  <Step title="Rate Limiting">
+    Implement rate limiting to prevent abuse and brute force attacks.
+  </Step>
+  
+  <Step title="Monitor API Usage">
+    Log and monitor API requests for suspicious activity.
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+### 401 Unauthorized
+
+If you receive a 401 error:
+
+- Verify your credentials are correct
+- Check if Application Passwords are enabled on your WordPress site
+- Ensure HTTPS is being used
+- Verify the user has appropriate permissions
+
+### 403 Forbidden
+
+If you receive a 403 error:
+
+- Check if the user has permission to access the requested content
+- Verify the post ID exists and is accessible
+- Review WordPress capability requirements
+
+### Authentication Plugin Conflicts
+
+Some security plugins may interfere with REST API authentication:
+
+- Check your security plugin settings
+- Whitelist REST API endpoints if needed
+- Review .htaccess rules that might block authorization headers
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Usage Examples" icon="code" href="/guides/usage-examples">
+    See practical examples of API authentication in action
+  </Card>
+  
+  <Card title="API Reference" icon="book" href="/api/overview">
+    Explore all available API endpoints
+  </Card>
+</CardGroup>

@@ -1,0 +1,60 @@
+---
+title: 'API Overview'
+description: 'Overview of Beaver Builder REST API endpoints'
+---
+
+The Beaver Builder REST API provides endpoints to retrieve page content, CSS, and JavaScript for pages built with Beaver Builder.
+
+## Base URL
+
+All endpoints are prefixed with:
+
+```
+/wp-json/fl-builder/v1/
+```
+
+## Available Endpoints
+
+### Content Endpoint
+
+Retrieve complete page content including HTML, CSS, and JavaScript.
+
+```
+GET /wp-json/fl-builder/v1/{page_id}
+```
+
+[View full documentation](/api/content)
+
+### CSS Endpoint
+
+Retrieve only the CSS styles for a page.
+
+```
+GET /wp-json/fl-builder/v1/css/{page_id}
+```
+
+[View full documentation](/api/css)
+
+### JS Endpoint
+
+Retrieve only the JavaScript code for a page.
+
+```
+GET /wp-json/fl-builder/v1/js/{page_id}
+```
+
+[View full documentation](/api/js)
+
+## Authentication
+
+These endpoints use WordPress REST API authentication. Depending on your WordPress configuration, you may need to authenticate using:
+
+- Application passwords
+- OAuth
+- Cookie authentication
+
+Refer to the [WordPress REST API Authentication documentation](https://developer.wordpress.org/rest-api/using-the-rest-api/authentication/) for more details.
+
+## Response Format
+
+All endpoints return JSON responses. The content endpoint returns an object with multiple properties, while the CSS and JS endpoints return plain text strings.

@@ -1,0 +1,70 @@
+---
+title: 'Get Page Content'
+description: 'Retrieve complete page content including HTML, CSS, and JavaScript'
+api: 'GET /wp-json/fl-builder/v1/{page_id}'
+---
+
+Retrieve the complete rendered content for a Beaver Builder page, including HTML markup, CSS styles, and JavaScript code.
+
+## Endpoint
+
+```
+GET /wp-json/fl-builder/v1/{page_id}
+```
+
+## Path Parameters
+
+<ParamField path="page_id" type="integer" required>
+  The WordPress post/page ID to retrieve content for. Must be a valid post ID with Beaver Builder content.
+</ParamField>
+
+## Response
+
+Returns a JSON object containing the page ID and all rendered content.
+
+<ResponseField name="id" type="integer">
+  The WordPress post/page ID
+</ResponseField>
+
+<ResponseField name="html" type="string">
+  The rendered HTML content of the page
+</ResponseField>
+
+<ResponseField name="css" type="string">
+  The compiled CSS styles for the page
+</ResponseField>
+
+<ResponseField name="js" type="string">
+  The JavaScript code for the page
+</ResponseField>
+
+## Example Request
+
+```bash cURL
+curl -X GET "https://yoursite.com/wp-json/fl-builder/v1/123" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+## Example Response
+
+```json
+{
+  "id": 123,
+  "html": "<div class='fl-builder-content'>...</div>",
+  "css": ".fl-node-abc123 { background-color: #ffffff; }",
+  "js": "jQuery(document).ready(function($) { ... });"
+}
+```
+
+## Use Cases
+
+- Retrieve complete page content for headless implementations
+- Export page content for external rendering
+- Build custom front-end applications using Beaver Builder content
+- Create page previews or snapshots
+
+## Notes
+
+- The endpoint renders the content server-side before returning it
+- CSS and JS are generated dynamically based on the page's Beaver Builder configuration
+- The response includes all necessary assets to render the page independently
