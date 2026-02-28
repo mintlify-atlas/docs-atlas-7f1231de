@@ -9,7 +9,7 @@ The Beaver Builder REST API provides endpoints to retrieve page content, CSS, an
 
 All endpoints are prefixed with:
 
-```
+```text
 /wp-json/fl-builder/v1/
 ```
 
@@ -19,7 +19,7 @@ All endpoints are prefixed with:
 
 Retrieve complete page content including HTML, CSS, and JavaScript.
 
-```
+```http
 GET /wp-json/fl-builder/v1/{page_id}
 ```
 
@@ -29,7 +29,7 @@ GET /wp-json/fl-builder/v1/{page_id}
 
 Retrieve only the CSS styles for a page.
 
-```
+```http
 GET /wp-json/fl-builder/v1/css/{page_id}
 ```
 
@@ -39,7 +39,7 @@ GET /wp-json/fl-builder/v1/css/{page_id}
 
 Retrieve only the JavaScript code for a page.
 
-```
+```http
 GET /wp-json/fl-builder/v1/js/{page_id}
 ```
 

@@ -8,7 +8,7 @@ The Beaver Builder REST API returns responses in different formats depending on 
 
 ## Content Endpoint Response
 
-The content endpoint (`/fl-builder/v1/{id}`) returns a comprehensive object containing the rendered HTML, CSS, and JavaScript for a Beaver Builder layout.
+The content endpoint (`/fl-builder/v1/{page_id}`) returns a comprehensive object containing the rendered HTML, CSS, and JavaScript for a Beaver Builder layout.
 
 ### Response Structure
 
@@ -45,7 +45,7 @@ The `html`, `css`, and `js` fields work together to provide a complete, ready-to
 
 ## CSS Endpoint Response
 
-The CSS endpoint (`/fl-builder/v1/css/{id}`) returns only the compiled CSS for a specific layout.
+The CSS endpoint (`/fl-builder/v1/css/{page_id}`) returns only the compiled CSS for a specific layout.
 
 ### Response Structure
 
@@ -67,7 +67,7 @@ The CSS endpoint is useful when you only need to update styles without re-fetchi
 
 ## JS Endpoint Response
 
-The JavaScript endpoint (`/fl-builder/v1/js/{id}`) returns only the JavaScript code for a specific layout.
+The JavaScript endpoint (`/fl-builder/v1/js/{page_id}`) returns only the JavaScript code for a specific layout.
 
 ### Response Structure
 
